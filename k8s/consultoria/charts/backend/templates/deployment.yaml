@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.global.backend.name }}
+  labels:
+    app: {{ .Values.global.backend.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.global.backend.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.global.backend.name }}
+    spec:
+      initContainers:
+        - name: wait-for-db
+          image: "{{ .Values.global.postgres.image }}"
+          imagePullPolicy: {{ .Values.global.postgres.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h {{ .Release.Name }}-db -p {{ .Values.global.postgres.port }} -U {{ .Values.global.postgres.user }}; do
+                echo "Aguardando o banco de dados..."
+                sleep 2
+              done
+        - name: wait-for-redis
+          image: "{{ .Values.global.redis.image }}"
+          imagePullPolicy: {{ .Values.global.redis.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              until redis-cli -h {{ .Release.Name }}-redis -p {{ .Values.global.redis.port }} ping; do
+                echo "Aguardando o Redis..."
+                sleep 2
+              done
+      containers:
+        - name: {{ .Values.global.backend.name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.global.backend.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+            - secretRef:
+                name: {{ .Release.Name }}-secret
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.global.backend.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10

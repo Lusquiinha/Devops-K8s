@@ -1,0 +1,15 @@
+replicaCount: 1
+
+storage: 2Gi
+storageClassName: manual
+hostPath: /mnt/data/consultoria-db
+pgData: /var/lib/postgresql/data/pgdata
+mountPath: /var/lib/postgresql/data
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"

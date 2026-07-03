@@ -1,0 +1,84 @@
+global:
+  ingressHost: k8s.local
+
+  backend:
+    name: backend
+    port: "3000"
+
+  frontend:
+    name: frontend
+    port: "80"
+
+  postgres:
+    user: postgres
+    password: senha123
+    db: consultoria
+    port: "5432"
+    image: postgres:16
+    pullPolicy: IfNotPresent
+
+  redis:
+    port: "6379"
+    image: redis:7-alpine
+    pullPolicy: IfNotPresent
+
+  mode: DEV
+
+  jwtSecret: segredo_jwt_para_ambiente_de_dev
+  email:
+    user: noreply@example.com
+    pass: senha_de_app_placeholder
+    host: smtp.gmail.com
+
+db:
+  replicaCount: 1
+  storage: 2Gi
+  storageClassName: manual
+  hostPath: /mnt/data/consultoria-db
+  pgData: /var/lib/postgresql/data/pgdata
+  mountPath: /var/lib/postgresql/data
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+redis:
+  replicaCount: 1
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "250m"
+
+backend:
+  replicaCount: 5
+  image:
+    repository: lucasoliveiraalves/consultoria-backend
+    tag: latest
+    pullPolicy: Always
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+frontend:
+  replicaCount: 5
+  image:
+    repository: lucasoliveiraalves/consultoria-frontend
+    tag: latest
+    pullPolicy: Always
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "250m"

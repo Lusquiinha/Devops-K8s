@@ -1,0 +1,13 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  POSTGRES_HOST: {{ .Release.Name }}-db
+  POSTGRES_PORT: {{ .Values.global.postgres.port | quote }}
+  POSTGRES_DB: {{ .Values.global.postgres.db | quote }}
+  PORT: {{ .Values.global.backend.port | quote }}
+  MODE: {{ .Values.global.mode | quote }}
+  EMAIL_HOST: {{ .Values.global.email.host | quote }}
+  REDIS_HOST: {{ .Release.Name }}-redis
+  REDIS_PORT: {{ .Values.global.redis.port | quote }}

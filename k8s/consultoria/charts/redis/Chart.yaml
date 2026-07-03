@@ -1,0 +1,6 @@
+apiVersion: v2
+name: redis
+description: Subchart do Redis (pub/sub para o adapter do Socket.IO)
+type: application
+version: 0.1.0
+appVersion: "7"

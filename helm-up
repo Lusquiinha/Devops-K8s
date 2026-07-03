@@ -1,0 +1,87 @@
+#!/bin/bash
+
+DOCKERHUB_USER=lucasoliveiraalves
+BACKEND_IMAGE=$DOCKERHUB_USER/consultoria-backend
+FRONTEND_IMAGE=$DOCKERHUB_USER/consultoria-frontend
+
+load_image() {
+    minikube image load $1
+}
+
+build_backend_image() {
+
+    ################################################
+    # Gerando a imagem docker do backend
+    ################################################
+
+    cd back-consultoria
+
+    docker build . -t $BACKEND_IMAGE
+
+    docker push $BACKEND_IMAGE
+
+    load_image $BACKEND_IMAGE
+
+    cd ..
+}
+
+build_frontend_image() {
+
+    ################################################
+    # Gerando a imagem docker do frontend
+    ################################################
+
+    cd front-consultoria
+
+    docker build . -t $FRONTEND_IMAGE
+
+    docker push $FRONTEND_IMAGE
+
+    load_image $FRONTEND_IMAGE
+
+    cd ..
+}
+
+init_minikube() {
+
+    ################################################
+    # Inicializando o Minikube
+    ################################################
+
+    minikube start
+
+    ################################################
+    # Habilitando o Ingress
+    ################################################
+
+    minikube addons enable ingress
+}
+
+################################################
+# Verificando flags -ibf
+################################################
+
+while getopts ":ibf" option; do
+   case $option in
+      i) # inicializa o minikube
+         init_minikube
+         load_image postgres:16
+         ;;
+      b) # build da imagem do backend
+         build_backend_image
+         ;;
+      f) # build da imagem do frontend
+         build_frontend_image
+         ;;
+   esac
+done
+
+################################################
+# Instalando via Helm
+################################################
+
+helm upgrade --install consultoria k8s/consultoria
+
+echo ""
+echo "Adicione ao /etc/hosts (uma vez):  $(minikube ip 2>/dev/null)  k8s.local"
+echo "Acesse:  http://k8s.local"

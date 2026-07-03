@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Name }}-db-pv
+  labels:
+    type: local
+spec:
+  storageClassName: {{ .Values.storageClassName }}
+  capacity:
+    storage: {{ .Values.storage }}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: {{ .Values.hostPath | quote }}
+    type: DirectoryOrCreate
