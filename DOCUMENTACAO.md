@@ -1,6 +1,6 @@
 # Documentação — Implantação no Kubernetes (Minikube)
 
-**Disciplina:** DevOps — **Aluno:** Lucas Oliveira Alves
+**Disciplina:** DevOps — **Aluno:** Lucas de Oliveira Rodrigues Alves
 **Aplicação:** Plataforma de Consultoria
 
 Este documento descreve (a) a aplicação e seus componentes, (b) o roteiro de testes
